@@ -1,0 +1,10 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_offset_vertical_center">200dp</dimen>
+    <dimen name="sign_up_box_dimens">250dp</dimen>
+    <dimen name="text_box_size">215dp</dimen>
+    <dimen name="submit_button_height">60dp</dimen>
+    <dimen name="toolbar_text_size">16sp</dimen>
+</resources>

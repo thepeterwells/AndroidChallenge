@@ -1,0 +1,95 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/outstandingBlue"
+    tools:context="com.paandw.peter.androidchallenge.LoginFragment"
+    android:id="@+id/login_fragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="@dimen/activity_offset_vertical_center"
+        android:textColor="@color/white"
+        android:textSize="48sp"
+        android:fontFamily="sans"
+        android:textAlignment="center"
+        android:text="SIGN UP"
+        android:id="@+id/sign_up_text"/>
+
+    <View
+        android:layout_width="@dimen/sign_up_box_dimens"
+        android:layout_height="@dimen/sign_up_box_dimens"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:background="@color/white"
+        android:id="@+id/sign_up_box_background">
+    </View>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name_input_label"
+        android:textColor="@color/mobileBlue"
+        android:textSize="12sp"
+        android:text="NAME"
+        android:layout_gravity="center"
+        android:layout_marginBottom="120dp"
+        android:layout_marginRight="90dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/email_input_label"
+        android:textColor="@color/mobileBlue"
+        android:textSize="12sp"
+        android:text="EMAIL"
+        android:layout_gravity="center"
+        android:layout_marginBottom="40dp"
+        android:layout_marginRight="90dp"/>
+
+    <EditText
+        android:layout_width="@dimen/text_box_size"
+        android:layout_height="wrap_content"
+        android:id="@+id/name_input"
+        android:layout_gravity="center"
+        android:layout_marginBottom="90dp"
+        android:textColor="@color/black"
+        android:inputType="text"
+        android:textCursorDrawable="@null"
+        android:backgroundTint="@color/colorPrimaryDark"/>
+
+    <EditText
+        android:layout_width="@dimen/text_box_size"
+        android:layout_height="wrap_content"
+        android:id="@+id/email_input"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/black"
+        android:inputType="textEmailAddress"
+        android:textCursorDrawable="@null"
+        android:backgroundTint="@color/colorPrimaryDark"/>
+
+    <View
+        android:layout_width="@dimen/sign_up_box_dimens"
+        android:layout_height="@dimen/submit_button_height"
+        android:layout_gravity="center"
+        android:layout_marginTop="80dp"
+        android:background="@color/mobileBlue"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/submit_button_height"
+        android:layout_gravity="center"
+        android:background="@color/mobileBlue"
+        android:textColor="@color/white"
+        android:text="SUBMIT"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="80dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:onClick="submitClick"
+        />
+
+</FrameLayout>
