@@ -6,5 +6,8 @@
     <dimen name="sign_up_box_dimens">250dp</dimen>
     <dimen name="text_box_size">215dp</dimen>
     <dimen name="submit_button_height">60dp</dimen>
-    <dimen name="toolbar_text_size">16sp</dimen>
+    <dimen name="toolbar_text_size">36sp</dimen>
+    <dimen name="list_item_height">48dp</dimen>
+    <dimen name="list_item_text_offset">80dp</dimen>
+    <dimen name="kingdom_image_size">75dp</dimen>
 </resources>

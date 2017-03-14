@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/kingdom_list_item_container">
+
+    <ImageView
+        android:layout_width="@dimen/kingdom_image_size"
+        android:layout_height="@dimen/kingdom_image_size"
+        android:layout_centerVertical="true"
+        android:id="@+id/kingdom_list_image"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/kingdom_list_name"
+        android:textColor="@color/mobileBlue"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/list_item_text_offset"
+        android:textSize="@dimen/toolbar_text_size"/>
+
+</RelativeLayout>

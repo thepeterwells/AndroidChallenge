@@ -3,23 +3,27 @@ package com.paandw.peter.androidchallenge;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.lang.reflect.Field;
-
-import butterknife.BindView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
 
 
 /**
@@ -41,11 +45,11 @@ public class KingdomListFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    private SharedPreferences emailStorage;
-    private String userEmail;
+    private ArrayList<Kingdom> kingdomList;
 
-    private TextView toolbarText;
-    private Toolbar toolbar;
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private KingdomListAdapter adapter;
 
     public KingdomListFragment() {
         // Required empty public constructor
@@ -84,11 +88,43 @@ public class KingdomListFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_kingdom_list, container, false);
 
-        emailStorage = getActivity().getPreferences(Context.MODE_PRIVATE);
-        userEmail = emailStorage.getString("Email", "null");
+        kingdomList = new ArrayList<>();
+        recyclerView = (RecyclerView)v.findViewById(R.id.kingdom_list);
+        layoutManager = new LinearLayoutManager(v.getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new ListDivider(v.getContext()));
+        adapter = new KingdomListAdapter(kingdomList);
+        recyclerView.setAdapter(adapter);
+
         setHasOptionsMenu(true);
 
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://challenge2015.myriadapps.com/api/v1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        KingdomInfoGrabber infoGrabber = retrofit.create(KingdomInfoGrabber.class);
+
+        infoGrabber.getKingdoms().enqueue(new Callback<List<Kingdom>>() {
+            @Override
+            public void onResponse(Call<List<Kingdom>> call, Response<List<Kingdom>> response) {
+                for(Kingdom kingdom : response.body()) {
+                    kingdomList.add(kingdom);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<List<Kingdom>> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
+
         return v;
+    }
+
+    public ArrayList<Kingdom> getKingdomList(){
+        return kingdomList;
     }
 
     @Override
@@ -134,5 +170,10 @@ public class KingdomListFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public interface KingdomInfoGrabber{
+        @GET("kingdoms")
+        Call<List<Kingdom>> getKingdoms();
     }
 }
