@@ -10,7 +10,8 @@
     android:id="@+id/kingdom_list_item_container"
     android:clickable="true"
     android:focusable="true"
-    android:background="@drawable/touch_effect_background">
+    android:background="@drawable/touch_effect_background"
+    android:onClick="kingdomListSelection">
 
     <ImageView
         android:layout_width="@dimen/kingdom_image_size"

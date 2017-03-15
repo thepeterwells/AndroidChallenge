@@ -1,5 +1,6 @@
 package com.paandw.peter.androidchallenge;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +8,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 
 /**
@@ -20,12 +36,20 @@ import android.view.ViewGroup;
 public class KingdomInfoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM1 = "kingdomID";
+    private static final String ARG_PARAM2 = "kingdomNAME";
+    private static final String ARG_PARAM3 = "kingdomIMAGE";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private int kingdomID;
+    private String kingdomNAME;
+    private String kingdomIMAGE;
+
+    private ImageView img;
+    private TextView climateText, popText;
+    private RelativeLayout layout;
+
+    private KingdomInfo kingdomInfo;
 
     private OnFragmentInteractionListener mListener;
 
@@ -37,16 +61,16 @@ public class KingdomInfoFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param kingdomID Parameter 1.
      * @return A new instance of fragment KingdomInfoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static KingdomInfoFragment newInstance(String param1, String param2) {
+    public static KingdomInfoFragment newInstance(int kingdomID, String kingdomNAME, String kingdomIMAGE) {
         KingdomInfoFragment fragment = new KingdomInfoFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(ARG_PARAM1, kingdomID);
+        args.putString(ARG_PARAM2, kingdomNAME);
+        args.putString(ARG_PARAM3, kingdomIMAGE);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,8 +79,9 @@ public class KingdomInfoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            kingdomID = getArguments().getInt(ARG_PARAM1);
+            kingdomNAME = getArguments().getString(ARG_PARAM2);
+            kingdomIMAGE = getArguments().getString(ARG_PARAM3);
         }
     }
 
@@ -64,7 +89,52 @@ public class KingdomInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_kingdom_info, container, false);
+        View v = inflater.inflate(R.layout.fragment_kingdom_info, container, false);
+        if (getArguments() != null) {
+            kingdomID = getArguments().getInt(ARG_PARAM1);
+            kingdomNAME = getArguments().getString(ARG_PARAM2);
+            kingdomIMAGE = getArguments().getString(ARG_PARAM3);
+        }
+
+        layout = (RelativeLayout)v.findViewById(R.id.kingdom_info_layout);
+        img = (ImageView)v.findViewById(R.id.kingdom_info_image);
+        climateText = (TextView)v.findViewById(R.id.climate_text);
+        popText = (TextView)v.findViewById(R.id.population_text);
+
+        kingdomInfo = new KingdomInfo();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://challenge2015.myriadapps.com/api/v1/kingdoms/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        KingdomInfoGrabber infoGrabber = retrofit.create(KingdomInfoGrabber.class);
+
+        retrieveData(infoGrabber, v, 2);
+
+        return v;
+    }
+
+    private void retrieveData(final KingdomInfoGrabber infoGrabber, final View v, final int recursions){
+        infoGrabber.getKingdomInfo(kingdomID).enqueue(new Callback<KingdomInfo>() {
+            @Override
+            public void onResponse(Call<KingdomInfo> call, Response<KingdomInfo> response) {
+                kingdomInfo = response.body();
+                Glide.with(v.getContext()).load(kingdomIMAGE).into(img);
+                climateText.setText(kingdomInfo.getClimate());
+                String populationAsString = kingdomInfo.getPopulation() + "";
+                popText.setText(populationAsString);
+                layout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onFailure(Call<KingdomInfo> call, Throwable t) {
+                if(recursions >= 1) {
+                    int temp = recursions;
+                    retrieveData(infoGrabber, v, temp - 1);
+                }
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -104,5 +174,10 @@ public class KingdomInfoFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public interface KingdomInfoGrabber{
+        @GET("{id}")
+        Call<KingdomInfo> getKingdomInfo(@Path("id") int id);
     }
 }

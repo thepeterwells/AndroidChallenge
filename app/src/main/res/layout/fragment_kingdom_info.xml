@@ -4,10 +4,54 @@
     android:layout_height="match_parent"
     tools:context="com.paandw.peter.androidchallenge.KingdomInfoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:visibility="invisible"
+        android:id="@+id/kingdom_info_layout">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/kingdom_info_image_size"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/black"
+            android:id="@+id/kingdom_info_image" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/black"
+            android:text="CLIMATE"
+            android:layout_below="@+id/kingdom_info_image"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_marginLeft="@dimen/padding_small"
+            android:id="@+id/climate_label"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/climate_label"
+            android:textSize="@dimen/kingdom_info_text_size"
+            android:textColor="@color/outstandingBlue"
+            android:layout_marginLeft="@dimen/padding_small"
+            android:id="@+id/climate_text"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_marginLeft="@dimen/padding_small"
+            android:text="POPULATION"
+            android:layout_below="@+id/climate_text"
+            android:id="@+id/population_label"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/population_label"
+            android:textSize="@dimen/kingdom_info_text_size"
+            android:textColor="@color/outstandingBlue"
+            android:layout_marginLeft="@dimen/padding_small"
+            android:id="@+id/population_text"/>
+
+    </RelativeLayout>
 
 </FrameLayout>

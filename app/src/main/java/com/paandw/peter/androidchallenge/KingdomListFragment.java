@@ -50,6 +50,10 @@ public class KingdomListFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     private KingdomListAdapter adapter;
 
+    //This will return false until the kingdom list has been created
+    private boolean kingdomListPopulated = false;
+    private int selectedKingdomIndex;
+
     public KingdomListFragment() {
         // Required empty public constructor
     }
@@ -99,11 +103,11 @@ public class KingdomListFragment extends Fragment {
         setHasOptionsMenu(true);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://challenge2015.myriadapps.com/api/v1/")
+                .baseUrl("http://challenge2015.myriadapps.com/api/v1/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        KingdomInfoGrabber infoGrabber = retrofit.create(KingdomInfoGrabber.class);
+        KingdomListGrabber infoGrabber = retrofit.create(KingdomListGrabber.class);
 
         infoGrabber.getKingdoms().enqueue(new Callback<List<Kingdom>>() {
             @Override
@@ -115,9 +119,10 @@ public class KingdomListFragment extends Fragment {
                 recyclerView.addOnItemTouchListener(new CustomTouchListener(context, recyclerView, new CustomClickListener() {
                     @Override
                     public void onClick(View v, int clickPosition) {
-                        MainActivity.kingdomSelected(kingdomList, clickPosition);
+                        selectedKingdomIndex = clickPosition;
                     }
                 }));
+                kingdomListPopulated = true;
             }
 
             @Override
@@ -130,7 +135,16 @@ public class KingdomListFragment extends Fragment {
     }
 
     public ArrayList<Kingdom> getKingdomList(){
-        return kingdomList;
+        if(kingdomListPopulated)
+            return kingdomList;
+        else
+            return null;
+    }
+    public int getSelectedKingdomIndex(){
+        if(kingdomListPopulated)
+            return selectedKingdomIndex;
+        else
+            return -1;
     }
 
     @Override
@@ -178,7 +192,7 @@ public class KingdomListFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public interface KingdomInfoGrabber{
+    public interface KingdomListGrabber{
         @GET("kingdoms")
         Call<List<Kingdom>> getKingdoms();
     }
