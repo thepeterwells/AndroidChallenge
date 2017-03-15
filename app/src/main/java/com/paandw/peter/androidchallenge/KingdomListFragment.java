@@ -1,20 +1,19 @@
 package com.paandw.peter.androidchallenge;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,12 +86,13 @@ public class KingdomListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_kingdom_list, container, false);
+        final Context context = v.getContext();
 
         kingdomList = new ArrayList<>();
         recyclerView = (RecyclerView)v.findViewById(R.id.kingdom_list);
-        layoutManager = new LinearLayoutManager(v.getContext());
+        layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new ListDivider(v.getContext()));
+        recyclerView.addItemDecoration(new ListDivider(context));
         adapter = new KingdomListAdapter(kingdomList);
         recyclerView.setAdapter(adapter);
 
@@ -112,6 +112,12 @@ public class KingdomListFragment extends Fragment {
                     kingdomList.add(kingdom);
                 }
                 adapter.notifyDataSetChanged();
+                recyclerView.addOnItemTouchListener(new CustomTouchListener(context, recyclerView, new CustomClickListener() {
+                    @Override
+                    public void onClick(View v, int clickPosition) {
+                        MainActivity.kingdomSelected(kingdomList, clickPosition);
+                    }
+                }));
             }
 
             @Override
@@ -175,5 +181,43 @@ public class KingdomListFragment extends Fragment {
     public interface KingdomInfoGrabber{
         @GET("kingdoms")
         Call<List<Kingdom>> getKingdoms();
+    }
+
+    //Private class and interface for custom touch listener
+    private interface CustomClickListener{
+        void onClick(View v, int clickPosition);
+    }
+    private class CustomTouchListener implements RecyclerView.OnItemTouchListener{
+
+        private CustomClickListener clickListener;
+        private GestureDetector gesture;
+
+        public CustomTouchListener(Context context, final RecyclerView rv, final CustomClickListener clickListener){
+            this.clickListener = clickListener;
+            gesture = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onSingleTapUp(MotionEvent e){
+                    return true;
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            View childView = rv.findChildViewUnder(e.getX(), e.getY());
+            if(childView != null && gesture.onTouchEvent(e))
+                clickListener.onClick(childView, rv.getChildAdapterPosition(childView));
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
     }
 }

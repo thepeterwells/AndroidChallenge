@@ -93,6 +93,10 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().show();
     }
 
+    public static void kingdomSelected(ArrayList<Kingdom> kingdomList, int index){
+        System.out.println(kingdomList.get(index).getName());
+    }
+
     @Override
     public void onFragmentInteraction(Uri uri) {
 

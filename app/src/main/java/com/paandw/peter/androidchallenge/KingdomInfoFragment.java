@@ -7,20 +7,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-
-import butterknife.BindView;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoginFragment.OnFragmentInteractionListener} interface
+ * {@link KingdomInfoFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link LoginFragment#newInstance} factory method to
+ * Use the {@link KingdomInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginFragment extends Fragment {
+public class KingdomInfoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,11 +27,9 @@ public class LoginFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private EditText name, email;
-
     private OnFragmentInteractionListener mListener;
 
-    public LoginFragment() {
+    public KingdomInfoFragment() {
         // Required empty public constructor
     }
 
@@ -44,11 +39,11 @@ public class LoginFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginFragment.
+     * @return A new instance of fragment KingdomInfoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
+    public static KingdomInfoFragment newInstance(String param1, String param2) {
+        KingdomInfoFragment fragment = new KingdomInfoFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -69,12 +64,7 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_login, container, false);
-
-        name = (EditText)v.findViewById(R.id.name_input);
-        email = (EditText)v.findViewById(R.id.email_input);
-
-        return v;
+        return inflater.inflate(R.layout.fragment_kingdom_info, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -114,30 +104,5 @@ public class LoginFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-    }
-
-    public String submissionClick(){
-        String nameEntry = name.getText().toString();
-        String emailEntry = email.getText().toString();
-
-        int tracker = 0;
-        if(nameEntry.equals("")){
-            name.setError("Enter a valid name");
-        }
-        else
-            tracker++;
-        if(emailEntry.equals("") || !emailEntry.contains("@")
-                || emailEntry.contains(" ") || emailEntry.contains("\"")
-                || emailEntry.contains("\'")){
-            email.setError("Enter a valid email");
-        }
-        else
-            tracker++;
-
-        if(tracker != 2){
-            return "";
-        }
-        else
-            return emailEntry;
     }
 }

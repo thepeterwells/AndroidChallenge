@@ -50,6 +50,7 @@ public class KingdomListAdapter extends RecyclerView.Adapter<KingdomListAdapter.
         holder.kingdomName.setText(kingdom.getName());
 
         Glide.with(context).load(kingdom.getImage()).into(img);
+
     }
 
     @Override

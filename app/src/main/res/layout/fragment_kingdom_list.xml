@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:id="@+id/kingdom_list_fragment"
     android:layout_below="@+id/toolbar"
     tools:context="com.paandw.peter.androidchallenge.KingdomListFragment">
@@ -11,9 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/kingdom_list"
-        android:scrollbars="vertical"
-        android:background="@color/white">
-
+        android:scrollbars="vertical">
     </android.support.v7.widget.RecyclerView>
 
 </FrameLayout>
