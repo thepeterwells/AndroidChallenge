@@ -10,7 +10,8 @@
     android:id="@+id/quest_list_item_container"
     android:clickable="true"
     android:focusable="true"
-    android:background="@drawable/touch_effect_background">
+    android:background="@drawable/touch_effect_background"
+    android:onClick="questListSelection">
 
     <TextView
         android:layout_width="match_parent"

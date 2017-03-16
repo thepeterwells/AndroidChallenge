@@ -3,10 +3,24 @@ package com.paandw.peter.androidchallenge;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 
 /**
@@ -29,6 +43,7 @@ public class QuestInfoFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private int questID, questGIVERID;
     private String questNAME, questDESC, questIMAGE;
+    private RelativeLayout layout;
 
     private OnFragmentInteractionListener mListener;
 
@@ -74,7 +89,47 @@ public class QuestInfoFragment extends Fragment {
             questGIVERID = getArguments().getInt(ARG_PARAM5);
         }
 
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://challenge2015.myriadapps.com/api/v1/characters/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        layout = (RelativeLayout)v.findViewById(R.id.quest_info_layout);
+
+        CharacterInfoGrabber infoGrabber = retrofit.create(CharacterInfoGrabber.class);
+
+        retrieveData(infoGrabber, v);
+
         return v;
+    }
+
+    private void retrieveData(final CharacterInfoGrabber infoGrabber, final View v){
+        infoGrabber.getCharacterInfo(questGIVERID).enqueue(new Callback<CharacterInfo>() {
+            @Override
+            public void onResponse(Call<CharacterInfo> call, Response<CharacterInfo> response) {
+                CharacterInfo characterInfo = response.body();
+                ImageView questImg = (ImageView)v.findViewById(R.id.quest_info_image);
+                ImageView charImg = (ImageView)v.findViewById(R.id.quest_giver_image);
+                TextView questDesc = (TextView)v.findViewById(R.id.quest_description);
+                TextView charName = (TextView)v.findViewById(R.id.quest_giver_name);
+                TextView charProf = (TextView)v.findViewById(R.id.profession_text);
+                TextView charBio = (TextView)v.findViewById(R.id.bio_text);
+
+                Glide.with(v.getContext()).load(questIMAGE).into(questImg);
+                Glide.with(v.getContext()).load(characterInfo.getImage()).into(charImg);
+                questDesc.setText(questDESC);
+                charName.setText(characterInfo.getName());
+                charProf.setText(characterInfo.getProfession());
+                charBio.setText(characterInfo.getBio());
+
+                layout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onFailure(Call<CharacterInfo> call, Throwable t) {
+
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -114,5 +169,22 @@ public class QuestInfoFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public interface CharacterInfoGrabber{
+        @GET("{id}")
+        Call<CharacterInfo> getCharacterInfo(@Path("id") int id);
+    }
+
+    //Private class containing specific information on quest giver
+    private class CharacterInfo {
+        private int id;
+        private String name, image, profession, bio;
+
+        public int getID(){return id;}
+        public String getName(){return name;}
+        public String getImage(){return image;}
+        public String getProfession(){return profession;}
+        public String getBio(){return bio;}
     }
 }

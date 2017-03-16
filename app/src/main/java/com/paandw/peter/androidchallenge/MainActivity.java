@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -43,13 +44,14 @@ import retrofit2.http.Path;
 
 public class MainActivity extends AppCompatActivity
         implements LoginFragment.OnFragmentInteractionListener, KingdomListFragment.OnFragmentInteractionListener,
-                   KingdomInfoFragment.OnFragmentInteractionListener{
+                   KingdomInfoFragment.OnFragmentInteractionListener, QuestInfoFragment.OnFragmentInteractionListener{
 
     private LoginFragment login;
     private KingdomListFragment kingdoms;
     private KingdomInfoFragment selectedKingdom;
     private KingdomInfo selectedKingdomInfo;
     private FragmentManager fragmentManager;
+    private ArrayList<QuestInfo> questList;
 
     private SharedPreferences emailStorage;
     private String userEmail;
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity
 
         emailStorage = getPreferences(Context.MODE_PRIVATE);
         userEmail = emailStorage.getString("Email", "null");
+        questList = new ArrayList<>();
 
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -119,7 +122,6 @@ public class MainActivity extends AppCompatActivity
         ArrayList<Kingdom> kingdomList = kingdoms.getKingdomList();
         int kingdomIndex = kingdoms.getSelectedKingdomIndex();
 
-
         if(kingdomList != null && kingdomIndex != -1){
             int id = kingdomList.get(kingdomIndex).getID();
             String name = kingdomList.get(kingdomIndex).getName();
@@ -136,9 +138,27 @@ public class MainActivity extends AppCompatActivity
 
             selectedKingdom = KingdomInfoFragment.newInstance(id, name, image);
 
-            viewPager.setAdapter(new CustomPageAdapter(getSupportFragmentManager()));
+            viewPager.setAdapter(new CustomPageAdapter(getSupportFragmentManager(), questList));
+
+            viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+                @Override
+                public void onPageSelected(int pos){
+                    if(pos > 0)
+                        updateToolbar(selectedKingdomInfo.getName() + " | " + questList.get(pos - 1).getName(), true);
+                    else
+                        updateToolbar(selectedKingdomInfo.getName(), true);
+                }
+            });
+
             slideView(-view.getWidth());
             updateToolbar(name, true);
+        }
+    }
+
+    public void questListSelection(View view){
+        if(!questList.isEmpty() && selectedKingdom.getQuestSelectionIndex() != -1){
+            int index = selectedKingdom.getQuestSelectionIndex();
+            viewPager.setCurrentItem(index + 1, true);
         }
     }
 
@@ -148,6 +168,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<KingdomInfo> call, Response<KingdomInfo> response) {
                 selectedKingdomInfo = response.body();
+                ArrayList<QuestInfo> temp = selectedKingdomInfo.getQuests();
+                for(QuestInfo q : temp){
+                    questList.add(q);
+                }
+                viewPager.getAdapter().notifyDataSetChanged();
             }
 
             @Override
@@ -182,10 +207,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed(){
-        if(getSupportFragmentManager().getFragments().contains(selectedKingdom)){
-            getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                    .show(kingdoms).remove(selectedKingdom).commit();
+        if(!questList.isEmpty()){
             fragmentContainer.setVisibility(View.VISIBLE);
+            questList.clear();
+            viewPager.getAdapter().notifyDataSetChanged();
+            selectedKingdom.clearRecyclerViewListeners();
             slideView(0);
 
             updateToolbar(userEmail, false);
@@ -206,20 +232,37 @@ public class MainActivity extends AppCompatActivity
 
 
     //Nested class defining ViewPager adapter (for scrolling through quests)
-    private class CustomPageAdapter extends FragmentPagerAdapter{
+    private class CustomPageAdapter extends FragmentStatePagerAdapter{
 
-        public CustomPageAdapter(FragmentManager manager){
+        private ArrayList<QuestInfo> quests;
+
+        public CustomPageAdapter(FragmentManager manager, ArrayList<QuestInfo> quests){
             super(manager);
+            this.quests = quests;
         }
 
         @Override
         public Fragment getItem(int position) {
-            return selectedKingdom;
+            if(position > 0){
+                QuestInfo  quest = quests.get(position - 1);
+                int id = quest.getID();
+                String name = quest.getName();
+                String img = quest.getImage();
+                String desc = quest.getDescription();
+                int giverID = quest.getQuestGiverID();
+                return QuestInfoFragment.newInstance(id, name, desc, img, giverID);
+            }
+            else {
+                return selectedKingdom;
+            }
         }
 
         @Override
         public int getCount() {
-            return 1;
+            if(quests.size() == 0)
+                return 1;
+            else
+                return quests.size() + 1;
         }
     }
 }

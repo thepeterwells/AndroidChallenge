@@ -7,7 +7,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/quest_info_layout">
+        android:id="@+id/quest_info_layout"
+        android:visibility="invisible">
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="@dimen/kingdom_info_image_size"
@@ -21,6 +22,7 @@
             android:id="@+id/quest_description"
             android:layout_below="@id/quest_info_image"
             android:layout_marginTop="@dimen/padding_tiny"
+            android:layout_marginStart="@dimen/padding_small"
             android:textColor="@color/black"
             android:textSize="@dimen/standard_text_size"/>
 
@@ -30,7 +32,75 @@
             android:background="@color/mobileBlue"
             android:layout_below="@id/quest_description"
             android:layout_marginTop="@dimen/padding_tiny"
+            android:id="@+id/divider3"
             />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/divider3"
+            android:paddingStart="@dimen/padding_tiny"
+            android:paddingEnd="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_tiny"
+            android:paddingBottom="@dimen/padding_tiny"
+            android:id="@+id/quest_giver_name_and_image">
+
+            <ImageView
+                android:layout_width="@dimen/kingdom_image_size"
+                android:layout_height="@dimen/kingdom_image_size"
+                android:id="@+id/quest_giver_image" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/quest_giver_image"
+                android:layout_marginStart="@dimen/padding_small"
+                android:textSize="@dimen/quest_list_text_size"
+                android:textColor="@color/mobileBlue"
+                android:id="@+id/quest_giver_name"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/mobileBlue"
+            android:layout_below="@id/quest_giver_name_and_image"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_marginStart="@dimen/padding_small"
+            android:textSize="16sp"
+            android:text="Profession:"
+            android:id="@+id/profession_label"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="@dimen/standard_text_size"
+            android:id="@+id/profession_text"
+            android:layout_below="@+id/quest_giver_name_and_image"
+            android:layout_toEndOf="@+id/profession_label"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_marginStart="@dimen/padding_small"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/mobileBlue"
+            android:layout_below="@id/profession_label"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_marginStart="@dimen/padding_small"
+            android:textSize="16sp"
+            android:text="Bio:"
+            android:id="@+id/bio_label"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="@dimen/standard_text_size"
+            android:id="@+id/bio_text"
+            android:layout_below="@+id/profession_label"
+            android:layout_toEndOf="@+id/bio_label"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_marginStart="@dimen/padding_small"/>
 
     </RelativeLayout>
 

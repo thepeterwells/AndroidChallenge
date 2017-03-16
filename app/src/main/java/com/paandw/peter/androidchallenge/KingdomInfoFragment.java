@@ -10,7 +10,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -50,6 +52,10 @@ public class KingdomInfoFragment extends Fragment {
     private int kingdomID;
     private String kingdomNAME;
     private String kingdomIMAGE;
+
+    private boolean questListPopulated;
+    private int questSelectionIndex;
+    private CustomTouchListener touchListener;
 
     private ImageView img;
     private TextView climateText, popText;
@@ -108,6 +114,9 @@ public class KingdomInfoFragment extends Fragment {
         popText = (TextView)v.findViewById(R.id.population_text);
         recyclerView = (RecyclerView)v.findViewById(R.id.quest_list);
 
+        questListPopulated = false;
+        questSelectionIndex = -1;
+
         kingdomInfo = new KingdomInfo();
         questList = new ArrayList<>();
         adapter = new QuestListAdapter(questList);
@@ -139,6 +148,17 @@ public class KingdomInfoFragment extends Fragment {
                 climateText.setText(kingdomInfo.getClimate());
                 String populationAsString = kingdomInfo.getPopulation() + "";
                 popText.setText(populationAsString);
+                touchListener = new CustomTouchListener(v.getContext(), recyclerView,
+                        new CustomClickListener() {
+                            @Override
+                            public void onClick(View v, int clickPosition) {
+                                questSelectionIndex = clickPosition;
+                            }
+                        });
+                recyclerView.addOnItemTouchListener(touchListener);
+
+                questListPopulated = true;
+
             }
 
             @Override
@@ -149,6 +169,16 @@ public class KingdomInfoFragment extends Fragment {
                 }
             }
         });
+    }
+
+    public int getQuestSelectionIndex(){
+        if(questListPopulated)
+            return questSelectionIndex;
+        else
+            return -1;
+    }
+    public void clearRecyclerViewListeners(){
+        recyclerView.removeOnItemTouchListener(touchListener);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -229,5 +259,43 @@ public class KingdomInfoFragment extends Fragment {
             return questInfoList.size();
         }
 
+    }
+
+    //Private class and interface for custom touch listener
+    public interface CustomClickListener{
+        void onClick(View v, int clickPosition);
+    }
+    public class CustomTouchListener implements RecyclerView.OnItemTouchListener{
+
+        private CustomClickListener clickListener;
+        private GestureDetector gesture;
+
+        public CustomTouchListener(Context context, final RecyclerView rv, final CustomClickListener clickListener){
+            this.clickListener = clickListener;
+            gesture = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onSingleTapUp(MotionEvent e){
+                    return true;
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            View childView = rv.findChildViewUnder(e.getX(), e.getY());
+            if(childView != null && gesture.onTouchEvent(e))
+                clickListener.onClick(childView, rv.getChildAdapterPosition(childView));
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
     }
 }
