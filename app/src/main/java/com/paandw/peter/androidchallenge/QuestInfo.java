@@ -29,4 +29,8 @@ public class QuestInfo {
     public QuestGiver getGiver(){
         return giver;
     }
+
+    public int getQuestGiverID(){
+        return giver.getID();
+    }
 }

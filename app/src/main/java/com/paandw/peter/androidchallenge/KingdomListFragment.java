@@ -1,9 +1,12 @@
 package com.paandw.peter.androidchallenge;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
@@ -13,6 +16,10 @@ import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -233,5 +240,74 @@ public class KingdomListFragment extends Fragment {
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
         }
+    }
+
+    //Private class for drawing divider between list items
+    private class ListDivider extends RecyclerView.ItemDecoration{
+        private Drawable divider;
+
+        public ListDivider(Context context){
+            divider = ContextCompat.getDrawable(context, R.drawable.line_divider);
+        }
+
+        @Override
+        public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state){
+            int left = parent.getPaddingLeft() + 250;
+            int right = parent.getWidth() - parent.getPaddingRight() - 50;
+
+            int children = parent.getChildCount();
+            for(int i = 0; i < children; i++){
+                View child = parent.getChildAt(i);
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)child.getLayoutParams();
+                int top = child.getBottom() - params.bottomMargin;
+                int bottom = top + divider.getIntrinsicHeight();
+                divider.setBounds(left, top, right, bottom);
+                divider.draw(c);
+            }
+        }
+    }
+
+    //Private class containing the adapter for the kingdom list RecyclerView
+    private class KingdomListAdapter extends RecyclerView.Adapter<KingdomListAdapter.MyViewHolder>{
+
+        private ArrayList<Kingdom> kingdomList;
+        private Context context;
+
+        public class MyViewHolder extends RecyclerView.ViewHolder {
+            public TextView kingdomName;
+            public ImageView kingdomImage;
+            public MyViewHolder(View view) {
+                super(view);
+                context = view.getContext();
+                kingdomName = (TextView)view.findViewById(R.id.kingdom_list_name);
+                kingdomImage = (ImageView)view.findViewById(R.id.kingdom_list_image);
+            }
+        }
+
+        public KingdomListAdapter(ArrayList<Kingdom> kingdomList){
+            this.kingdomList = kingdomList;
+        }
+
+        @Override
+        public KingdomListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.kingdom_list_item, parent, false);
+            return new KingdomListAdapter.MyViewHolder(item);
+        }
+
+        @Override
+        public void onBindViewHolder(KingdomListAdapter.MyViewHolder holder, int position) {
+            Kingdom kingdom = kingdomList.get(position);
+            ImageView img = holder.kingdomImage;
+            holder.kingdomName.setText(kingdom.getName());
+
+            Glide.with(context).load(kingdom.getImage()).into(img);
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return kingdomList.size();
+        }
+
     }
 }

@@ -1,5 +1,7 @@
 package com.paandw.peter.androidchallenge;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -117,6 +119,7 @@ public class MainActivity extends AppCompatActivity
         ArrayList<Kingdom> kingdomList = kingdoms.getKingdomList();
         int kingdomIndex = kingdoms.getSelectedKingdomIndex();
 
+
         if(kingdomList != null && kingdomIndex != -1){
             int id = kingdomList.get(kingdomIndex).getID();
             String name = kingdomList.get(kingdomIndex).getName();
@@ -132,12 +135,9 @@ public class MainActivity extends AppCompatActivity
             retrieveData(id, infoGrabber, view, 2);
 
             selectedKingdom = KingdomInfoFragment.newInstance(id, name, image);
-            //getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    //.add(R.id.fragment_container, selectedKingdom).show(selectedKingdom).hide(kingdoms).commit();
 
             viewPager.setAdapter(new CustomPageAdapter(getSupportFragmentManager()));
-            fragmentContainer.setVisibility(View.INVISIBLE);
-
+            slideView(-view.getWidth());
             updateToolbar(name, true);
         }
     }
@@ -163,7 +163,21 @@ public class MainActivity extends AppCompatActivity
     private void updateToolbar(String title, boolean hasBackArrow){
         getSupportActionBar().setTitle(title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(hasBackArrow);
+        kingdoms.setHasOptionsMenu(!hasBackArrow);
         getSupportActionBar().show();
+    }
+
+    private void slideView(final int position){
+        fragmentContainer.animate().translationX(position).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                if(position >= 0)
+                    fragmentContainer.setVisibility(View.VISIBLE);
+                else
+                    fragmentContainer.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     @Override
@@ -172,6 +186,8 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                     .show(kingdoms).remove(selectedKingdom).commit();
             fragmentContainer.setVisibility(View.VISIBLE);
+            slideView(0);
+
             updateToolbar(userEmail, false);
         }
         else

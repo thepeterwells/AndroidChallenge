@@ -50,6 +50,46 @@
             android:textColor="@color/outstandingBlue"
             android:layout_marginLeft="@dimen/padding_small"
             android:id="@+id/population_text"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:paddingStart="@dimen/padding_tiny"
+            android:paddingEnd="@dimen/padding_tiny"
+            android:background="@color/mobileBlue"
+            android:layout_below="@id/population_text"
+            android:id="@+id/divider"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/divider"
+            android:background="@color/outstandingBlue"
+            android:layout_marginTop="@dimen/padding_tiny"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:text="Quests"
+            android:textAlignment="center"
+            android:id="@+id/quest_list_label"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:paddingStart="@dimen/padding_tiny"
+            android:paddingEnd="@dimen/padding_tiny"
+            android:background="@color/mobileBlue"
+            android:layout_marginTop="@dimen/padding_tiny"
+            android:layout_below="@id/quest_list_label"
+            android:id="@+id/divider2"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/quest_list"
+            android:layout_below="@id/divider2"
+            android:layout_marginTop="@dimen/padding_tiny"
+            android:scrollbars="vertical">
+
+        </android.support.v7.widget.RecyclerView>
 
     </RelativeLayout>
 

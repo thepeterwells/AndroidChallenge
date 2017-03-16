@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -50,9 +53,9 @@ public class KingdomInfoFragment extends Fragment {
 
     private ImageView img;
     private TextView climateText, popText;
-    private RelativeLayout layout;
-    private ViewPager viewPager;
-    private KingdomInfoFragment fragment;
+    private ArrayList<QuestInfo> questList;
+    private RecyclerView recyclerView;
+    private QuestListAdapter adapter;
 
     private KingdomInfo kingdomInfo;
 
@@ -100,14 +103,16 @@ public class KingdomInfoFragment extends Fragment {
             kingdomNAME = getArguments().getString(ARG_PARAM2);
             kingdomIMAGE = getArguments().getString(ARG_PARAM3);
         }
-
-        layout = (RelativeLayout) v.findViewById(R.id.kingdom_info_layout);
         img = (ImageView)v.findViewById(R.id.kingdom_info_image);
         climateText = (TextView)v.findViewById(R.id.climate_text);
         popText = (TextView)v.findViewById(R.id.population_text);
-        fragment = this;
+        recyclerView = (RecyclerView)v.findViewById(R.id.quest_list);
 
         kingdomInfo = new KingdomInfo();
+        questList = new ArrayList<>();
+        adapter = new QuestListAdapter(questList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(v.getContext()));
+        recyclerView.setAdapter(adapter);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://challenge2015.myriadapps.com/api/v1/kingdoms/")
@@ -126,6 +131,10 @@ public class KingdomInfoFragment extends Fragment {
             @Override
             public void onResponse(Call<KingdomInfo> call, Response<KingdomInfo> response) {
                 kingdomInfo = response.body();
+                for(QuestInfo questInfo : kingdomInfo.getQuests()){
+                    questList.add(questInfo);
+                }
+                adapter.notifyDataSetChanged();
                 Glide.with(v.getContext()).load(kingdomIMAGE).into(img);
                 climateText.setText(kingdomInfo.getClimate());
                 String populationAsString = kingdomInfo.getPopulation() + "";
@@ -184,5 +193,41 @@ public class KingdomInfoFragment extends Fragment {
     public interface KingdomInfoGrabber{
         @GET("{id}")
         Call<KingdomInfo> getKingdomInfo(@Path("id") int id);
+    }
+
+    //Private class defining adapter for quest list RecyclerView
+    private class QuestListAdapter extends RecyclerView.Adapter<QuestListAdapter.MyViewHolder>{
+
+        private ArrayList<QuestInfo> questInfoList;
+
+        public class MyViewHolder extends RecyclerView.ViewHolder{
+            public TextView questText;
+            public MyViewHolder(View itemView) {
+                super(itemView);
+                questText = (TextView)itemView.findViewById(R.id.quest_list_item_text);
+            }
+        }
+
+        public QuestListAdapter(ArrayList<QuestInfo> questInfoList){
+            this.questInfoList = questInfoList;
+        }
+
+        @Override
+        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.quest_list_item, parent, false);
+            return new QuestListAdapter.MyViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(MyViewHolder holder, int position) {
+            QuestInfo quest = questInfoList.get(position);
+            holder.questText.setText(quest.getName());
+        }
+
+        @Override
+        public int getItemCount() {
+            return questInfoList.size();
+        }
+
     }
 }

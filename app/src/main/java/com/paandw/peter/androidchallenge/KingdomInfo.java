@@ -1,5 +1,6 @@
 package com.paandw.peter.androidchallenge;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
 public class KingdomInfo {
     private int id, population;
     private String name, image, climate;
-    private List<QuestInfo> quests;
+    private ArrayList<QuestInfo> quests;
 
     public int getID(){
         return id;
@@ -32,7 +33,7 @@ public class KingdomInfo {
         return climate;
     }
 
-    public List<QuestInfo> getQuests(){
+    public ArrayList<QuestInfo> getQuests(){
         return quests;
     }
 }
