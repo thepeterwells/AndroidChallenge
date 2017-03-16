@@ -20,12 +20,21 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public class MainActivity extends AppCompatActivity
         implements LoginFragment.OnFragmentInteractionListener, KingdomListFragment.OnFragmentInteractionListener,
@@ -34,6 +43,7 @@ public class MainActivity extends AppCompatActivity
     private LoginFragment login;
     private KingdomListFragment kingdoms;
     private KingdomInfoFragment selectedKingdom;
+    private KingdomInfo selectedKingdomInfo;
     private FragmentManager fragmentManager;
 
     private SharedPreferences emailStorage;
@@ -104,6 +114,12 @@ public class MainActivity extends AppCompatActivity
             int id = kingdomList.get(kingdomIndex).getID();
             String name = kingdomList.get(kingdomIndex).getName();
             String image = kingdomList.get(kingdomIndex).getImage();
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://challenge2015.myriadapps.com/api/v1/kingdoms/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
             selectedKingdom = KingdomInfoFragment.newInstance(id, name, image);
             getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .add(R.id.fragment_container, selectedKingdom).show(selectedKingdom).hide(kingdoms).commit();
@@ -132,25 +148,5 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
-    }
-
-    //Nested class defining ViewPager adapter (for scrolling through quests)
-    private class CustomPageAdapter extends FragmentPagerAdapter{
-
-
-
-        public CustomPageAdapter(FragmentManager manager){
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            return 0;
-        }
     }
 }

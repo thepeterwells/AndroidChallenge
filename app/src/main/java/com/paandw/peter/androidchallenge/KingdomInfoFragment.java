@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +97,7 @@ public class KingdomInfoFragment extends Fragment {
             kingdomIMAGE = getArguments().getString(ARG_PARAM3);
         }
 
-        layout = (RelativeLayout)v.findViewById(R.id.kingdom_info_layout);
+        layout = (RelativeLayout) v.findViewById(R.id.kingdom_info_layout);
         img = (ImageView)v.findViewById(R.id.kingdom_info_image);
         climateText = (TextView)v.findViewById(R.id.climate_text);
         popText = (TextView)v.findViewById(R.id.population_text);
@@ -124,7 +125,6 @@ public class KingdomInfoFragment extends Fragment {
                 climateText.setText(kingdomInfo.getClimate());
                 String populationAsString = kingdomInfo.getPopulation() + "";
                 popText.setText(populationAsString);
-                layout.setVisibility(View.VISIBLE);
             }
 
             @Override

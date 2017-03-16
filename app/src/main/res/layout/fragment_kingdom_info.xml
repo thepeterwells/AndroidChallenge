@@ -7,7 +7,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
         android:id="@+id/kingdom_info_layout">
         <ImageView
             android:layout_width="match_parent"
