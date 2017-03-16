@@ -5,6 +5,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +51,8 @@ public class KingdomInfoFragment extends Fragment {
     private ImageView img;
     private TextView climateText, popText;
     private RelativeLayout layout;
+    private ViewPager viewPager;
+    private KingdomInfoFragment fragment;
 
     private KingdomInfo kingdomInfo;
 
@@ -101,6 +105,7 @@ public class KingdomInfoFragment extends Fragment {
         img = (ImageView)v.findViewById(R.id.kingdom_info_image);
         climateText = (TextView)v.findViewById(R.id.climate_text);
         popText = (TextView)v.findViewById(R.id.population_text);
+        fragment = this;
 
         kingdomInfo = new KingdomInfo();
 

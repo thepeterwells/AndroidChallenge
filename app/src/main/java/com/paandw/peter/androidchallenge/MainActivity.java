@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +19,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -50,6 +53,8 @@ public class MainActivity extends AppCompatActivity
     private String userEmail;
 
     private Toolbar toolbar;
+    private ViewPager viewPager;
+    private FrameLayout fragmentContainer;
 
 
     @Override
@@ -66,6 +71,8 @@ public class MainActivity extends AppCompatActivity
 
         login = new LoginFragment();
         kingdoms = new KingdomListFragment();
+        viewPager = (ViewPager)findViewById(R.id.view_pager);
+        fragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
 
         if(userEmail.equals("null")) {
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, login).commit();
@@ -120,12 +127,37 @@ public class MainActivity extends AppCompatActivity
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
+            SelectedKingdomInfoGrabber infoGrabber = retrofit.create(SelectedKingdomInfoGrabber.class);
+
+            retrieveData(id, infoGrabber, view, 2);
+
             selectedKingdom = KingdomInfoFragment.newInstance(id, name, image);
-            getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(R.id.fragment_container, selectedKingdom).show(selectedKingdom).hide(kingdoms).commit();
+            //getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    //.add(R.id.fragment_container, selectedKingdom).show(selectedKingdom).hide(kingdoms).commit();
+
+            viewPager.setAdapter(new CustomPageAdapter(getSupportFragmentManager()));
+            fragmentContainer.setVisibility(View.INVISIBLE);
 
             updateToolbar(name, true);
         }
+    }
+
+    private void retrieveData(final int kingdomID, final SelectedKingdomInfoGrabber infoGrabber,
+                              final View v, final int recursions){
+        infoGrabber.getKingdomInfo(kingdomID).enqueue(new Callback<KingdomInfo>() {
+            @Override
+            public void onResponse(Call<KingdomInfo> call, Response<KingdomInfo> response) {
+                selectedKingdomInfo = response.body();
+            }
+
+            @Override
+            public void onFailure(Call<KingdomInfo> call, Throwable t) {
+                if(recursions >= 1) {
+                    int temp = recursions;
+                    retrieveData(kingdomID, infoGrabber, v, temp - 1);
+                }
+            }
+        });
     }
 
     private void updateToolbar(String title, boolean hasBackArrow){
@@ -139,6 +171,7 @@ public class MainActivity extends AppCompatActivity
         if(getSupportFragmentManager().getFragments().contains(selectedKingdom)){
             getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                     .show(kingdoms).remove(selectedKingdom).commit();
+            fragmentContainer.setVisibility(View.VISIBLE);
             updateToolbar(userEmail, false);
         }
         else
@@ -148,5 +181,29 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    public interface SelectedKingdomInfoGrabber{
+        @GET("{id}")
+        Call<KingdomInfo> getKingdomInfo(@Path("id") int id);
+    }
+
+
+    //Nested class defining ViewPager adapter (for scrolling through quests)
+    private class CustomPageAdapter extends FragmentPagerAdapter{
+
+        public CustomPageAdapter(FragmentManager manager){
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return selectedKingdom;
+        }
+
+        @Override
+        public int getCount() {
+            return 1;
+        }
     }
 }
