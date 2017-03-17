@@ -39,7 +39,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public class MainActivity extends AppCompatActivity
@@ -52,6 +55,8 @@ public class MainActivity extends AppCompatActivity
     private KingdomInfo selectedKingdomInfo;
     private FragmentManager fragmentManager;
     private ArrayList<QuestInfo> questList;
+    private ArrayList<String> emailList;
+    Retrofit retrofit;
 
     private SharedPreferences emailStorage;
     private String userEmail;
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity
         emailStorage = getPreferences(Context.MODE_PRIVATE);
         userEmail = emailStorage.getString("Email", "null");
         questList = new ArrayList<>();
+        emailList = new ArrayList<>();
 
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -78,6 +84,9 @@ public class MainActivity extends AppCompatActivity
         kingdoms = new KingdomListFragment();
         viewPager = (ViewPager)findViewById(R.id.view_pager);
         fragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
+
+        retrofit = new Retrofit.Builder().baseUrl("http://challenge2015.myriadapps.com/api/v1/")
+                .addConverterFactory(GsonConverterFactory.create()).build();
 
         if(userEmail.equals("null")) {
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, login).commit();
@@ -96,7 +105,8 @@ public class MainActivity extends AppCompatActivity
             editor.commit();
             getSupportActionBar().hide();
             login = new LoginFragment();
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, login).commit();
+            viewPager.removeAllViews();
+            getSupportFragmentManager().beginTransaction().remove(kingdoms).add(R.id.fragment_container, login).commit();
         }
         else if(item.getItemId() == android.R.id.home){
             onBackPressed();
@@ -112,6 +122,9 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences.Editor editor = emailStorage.edit();
             editor.putString("Email", userEmail);
             editor.commit();
+
+            PostNewEmail poster = retrofit.create(PostNewEmail.class);
+            poster.postEmail(userEmail);
 
             updateToolbar(userEmail, false);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, kingdoms).commit();
@@ -211,6 +224,7 @@ public class MainActivity extends AppCompatActivity
             fragmentContainer.setVisibility(View.VISIBLE);
             questList.clear();
             viewPager.getAdapter().notifyDataSetChanged();
+            viewPager.removeAllViews();
             selectedKingdom.clearRecyclerViewListeners();
             slideView(0);
 
@@ -228,6 +242,12 @@ public class MainActivity extends AppCompatActivity
     public interface SelectedKingdomInfoGrabber{
         @GET("{id}")
         Call<KingdomInfo> getKingdomInfo(@Path("id") int id);
+    }
+
+    public interface PostNewEmail{
+        @FormUrlEncoded
+        @POST("subscribe")
+        Call<String> postEmail(@Field("email:") String email);
     }
 
 

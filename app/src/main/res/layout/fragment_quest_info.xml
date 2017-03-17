@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/kingdom_info_image_size"
             android:layout_gravity="center_horizontal"
-            android:background="@color/black"
+            android:background="@color/gray"
             android:id="@+id/quest_info_image" />
 
         <TextView
